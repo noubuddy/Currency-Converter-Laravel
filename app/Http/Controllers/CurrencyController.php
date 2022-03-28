@@ -5,18 +5,22 @@ namespace App\Http\Controllers;
 use Library\Currency;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Orchestra\Parser\Xml\Facade as XmlParser;
 
 class CurrencyController extends Controller
 {
     public function submit(Request $request)
     {
-        $body = self::fetch('https://www.lb.lt/fxrates_csv.lb?tp=EU&rs=1&dte=' . $request->input('date'));
+        $body = self::fetch('https://www.lb.lt/fxrates_csv.lb?tp=EU&rs=1&dte=2015-11-11');
 
         $array = new Currency(self::bodyToArray($body));
-        
-        echo 'https://www.lb.lt/fxrates_csv.lb?tp=EU&rs=1&dte=' . $request->input('date');
-        
-        dd($array->getCurrency());
+        $xml = self::xmlToArray();
+
+        //echo 'https://www.lb.lt/fxrates_csv.lb?tp=EU&rs=1&dte=' . $request->input('date');
+
+        //echo self::xmlToArray();
+//        dd($array);
+//        dd($xml);
     }
 
     private function bodyToArray($body)
@@ -32,10 +36,22 @@ class CurrencyController extends Controller
             for ($j = 0; $j < 4; $j++)
                 array_push($line, $elements[$j]);
 
-            array_push($values, $line);    
+            array_push($values, $line);
         }
 
         return $values;
+    }
+
+    private function xmlToArray(){
+        $xml = XmlParser::load(url('https://haldus.eestipank.ee/et/export/currency_rates?imported=2022-03-04&type=xml'));
+
+        $content = $xml->getContent();
+        /** @var \SimpleXMLElement $element */
+        $element = $content->Cube->Cube;
+        $array = json_decode(json_encode($element));
+        $content = array_map(fn($value) => ['currency' => $value->{'@attributes'}->currency, 'rate' => $value->{'@attributes'}->rate], $array->Cube);
+
+        return $content;
     }
 
     private function fetch($url)
