@@ -11,16 +11,13 @@ class CurrencyController extends Controller
 {
     public function submit(Request $request)
     {
-        $body = self::fetch('https://www.lb.lt/fxrates_csv.lb?tp=EU&rs=1&dte=2015-11-11');
+        $body = self::fetch('https://www.lb.lt/fxrates_csv.lb?tp=EU&rs=1&dte=' . $request->input('date'));
 
-        $array = new Currency(self::bodyToArray($body));
+        $body = new Currency(self::bodyToArray($body));
         $xml = self::xmlToArray();
 
-        //echo 'https://www.lb.lt/fxrates_csv.lb?tp=EU&rs=1&dte=' . $request->input('date');
-
-        //echo self::xmlToArray();
-//        dd($array);
-//        dd($xml);
+        //dd($body);
+        dd($xml);
     }
 
     private function bodyToArray($body)
@@ -46,7 +43,7 @@ class CurrencyController extends Controller
         $xml = XmlParser::load(url('https://haldus.eestipank.ee/et/export/currency_rates?imported=2022-03-04&type=xml'));
 
         $content = $xml->getContent();
-        /** @var \SimpleXMLElement $element */
+
         $element = $content->Cube->Cube;
         $array = json_decode(json_encode($element));
         $content = array_map(fn($value) => ['currency' => $value->{'@attributes'}->currency, 'rate' => $value->{'@attributes'}->rate], $array->Cube);
@@ -61,4 +58,5 @@ class CurrencyController extends Controller
 
         return $response->getBody();
     }
+
 }
