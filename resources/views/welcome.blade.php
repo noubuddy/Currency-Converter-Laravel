@@ -1,3 +1,4 @@
+@inject('parser', 'Library\Parser')
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,10 +24,10 @@
                     <div class="col">
                         <p style="margin-bottom: 5px;">Currency</p>
                         <div>
-                            <select name="from" style="/*background-color: #f4476b;" class="form-select mb-3" aria-label=".form-select-lg example">
-                                <option value="1">EUR</option>
-                                <option value="2">USD</option>
-                                <option value="3">RUB</option>
+                            <select name="currency" style="/*background-color: #f4476b;" class="form-select mb-3" aria-label=".form-select-lg example">
+                                @foreach ($parser->getCurrencies(null) as $currency)
+                                    <option value="{{ $currency }}">{{ $currency }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

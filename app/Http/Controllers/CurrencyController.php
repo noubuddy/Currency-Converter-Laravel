@@ -18,8 +18,15 @@ class CurrencyController extends Controller
         $rate_estonia = Parser::xmlToArray($fetched_xml);
         $rate_lithuania = Parser::bodyToArray($fetched_body);
 
-        // dd($rate_estonia, $rate_lithuania);
+        // dd($request->input('currency'));
 
-        return view('welcome', compact('rate_estonia', 'rate_lithuania', 'amount'));
+        // dd($rate_estonia, $rate_lithuania);
+        // dd($request->input('date'));
+
+        // dd(Parser::getCurrencies(null));
+
+        $currencies = Parser::getCurrencies($request->input('date'));
+
+        return view('welcome', compact('rate_estonia', 'rate_lithuania', 'amount', 'currencies'));
     }
 }
