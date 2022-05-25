@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/action', [CurrencyController::class, 'submit']);
+Route::post('/', [CurrencyController::class, '/submit']);
